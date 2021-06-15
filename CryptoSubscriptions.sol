@@ -9,37 +9,37 @@ contract CryptoSubscriptions is Ownable {
     string private _name = "Recurrable MATIC";
     string private _symbol = "recMATIC";
 
-    uint256 private _contractBalance;   // Holds all the funds in the contract, apart from our fees.
-    uint256 private _fees;              // Holds the fees that belong to the contract owner.
-    uint8 private _serviceFee = 1;    // Service fee in %.
-    uint256 private _minBillingInterval = 60;  // In seconds.
+    uint256 private _contractBalance;           // Holds all the funds in the contract, apart from our fees.
+    uint256 private _fees;                      // Holds the fees that belong to the contract owner.
+    uint8 private _serviceFee = 1;              // Service fee in %.
+    uint256 private _minBillingInterval = 3600;   // In seconds.
 
     struct subscriptionProduct {
       address vendorAddress;
       uint256 amount;
-      uint256 billingInterval;    // In seconds.
+      uint256 billingInterval;      // In seconds.
     }
     struct subscription {
       uint256 subscriptionID;
-      bool isActive;               // false for "cancelled", true for "active".
+      bool isActive;                // false for "cancelled", true for "active".
       bool isPendingCancel;
       address subscriberAddress;
       address vendorAddress;
       uint256 productID;
       uint256 amount;
-      uint256 billingInterval;    // In seconds.
-      uint256 lastPaymentTime;    // UNIX timestamp (equals to startTime on the first payment).
+      uint256 billingInterval;      // In seconds.
+      uint256 lastPaymentTime;      // UNIX timestamp (equals to 0 on the first payment).
     }
     mapping(uint256 => subscriptionProduct) private _subscriptionProducts;  // productID => subscriptionProduct.
     uint256 private _nextSubscriptionProductID = 1;
-    mapping(address => uint256[]) private _productVendors;  // vendorAddress => productIDs.
-    mapping(address => uint256[]) private _vendorsSubscriptions;  // vendorAddress => subscriptionIDs.
+    mapping(address => uint256[]) private _productVendors;                  // vendorAddress => productIDs.
+    mapping(address => uint256[]) private _vendorsSubscriptions;            // vendorAddress => subscriptionIDs.
 
-    mapping(uint256 => subscription) private _subscriptions; // subscriptionID => subscription.
+    mapping(uint256 => subscription) private _subscriptions;                // subscriptionID => subscription.
     uint256 private _nextSubscriptionID = 1;
-    mapping(address => uint256[]) private _subscribers;  // subscriberAddress => subscriptionIDs.
+    mapping(address => uint256[]) private _subscribers;                     // subscriberAddress => subscriptionIDs.
 
-    mapping(address => uint256) private _balances;  // subscriberAddress => balance.
+    mapping(address => uint256) private _balances;                          // subscriberAddress => balance.
 
     event recurringPaymentSent(address indexed subscriber, address indexed vendor, uint256 indexed subscriptionID, uint256 amount);
     event productCreated(uint256 tag, address vendor, uint256 indexed productID, uint256 amount, uint256 billingInterval);
